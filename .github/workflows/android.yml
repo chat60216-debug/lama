@@ -1,1 +1,29 @@
+name: Build Android APK
 
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  export:
+    name: Export debug APK
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.4.1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Export Android APK
+        run: |
+          mkdir -p build
+          godot --headless --verbose --path . --export-debug "Android" build/LamaDellEraPerduta.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lama-Android-APK
+          path: build/LamaDellEraPerduta.apk
+          if-no-files-found: error
+          retention-days: 14
